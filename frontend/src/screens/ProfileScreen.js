@@ -6,6 +6,7 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { getUserDetails, updateUserProfile } from '../actions/userActions';
 import { listMyOrders } from '../actions/orderActions';
+import {USER_UPDATE_PROFILE_RESET} from '../constants/userConstants';
 
 const ProfileScreen = ({ location, history }) => {
   const [name, setName] = useState('');
@@ -30,17 +31,19 @@ const ProfileScreen = ({ location, history }) => {
 
   useEffect(() => {
     if (!userInfo) {
-      history.push('/login');
-    } else {
-      if (!user.name) {
-        dispatch(getUserDetails('profile'));
-        dispatch(listMyOrders());
+      history.push('/login')
+  } else {
+      if (!user || !user.name) {
+          dispatch(getUserDetails('profile'))
+          dispatch(listMyOrders())
+      } else if (success) {
+          setTimeout(() => dispatch({type: USER_UPDATE_PROFILE_RESET}), 3000)
       } else {
-        setName(user.name);
-        setEmail(user.email);
+          setName(user.name)
+          setEmail(user.email)
       }
-    }
-  }, [dispatch, history, user, userInfo]);
+  }
+  }, [dispatch, history, user, userInfo, success]);
 
   const submitHandler = e => {
     e.preventDefault();
